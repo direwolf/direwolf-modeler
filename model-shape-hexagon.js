@@ -27,7 +27,7 @@ export class ModelShapeHexagon extends ModelShapeRect {
   }
 
   showPortOnHover() {
-    return true;
+    return false;
   }
 
   _resize() {
