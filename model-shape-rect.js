@@ -1,4 +1,5 @@
 import { ModelElement } from './model-element.js';
+import {ShapeInfo} from 'kld-intersections';
 
 export class ModelShapeRect extends ModelElement {
 
@@ -52,6 +53,11 @@ export class ModelShapeRect extends ModelElement {
   get minHeight() {
     return this._minHeight;
   }
+
+  getOuterShape(offset) {
+    return ShapeInfo.rectangle({x: (offset.x + this.x), y: (offset.y + this.y), width: this.width, height: this.height});
+  }
+
 
   /**
    * Direwolf-specific methods

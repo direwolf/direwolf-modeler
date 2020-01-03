@@ -1,4 +1,5 @@
 import { ModelShapeRect } from './model-shape-rect.js';
+import {ShapeInfo} from 'kld-intersections';
 
 export class ModelShapeHexagon extends ModelShapeRect {
 
@@ -43,6 +44,14 @@ export class ModelShapeHexagon extends ModelShapeRect {
   modelElementDragOver(modelElementType) {
     return this.acceptsChild(modelElementType);
   }
+
+  getOuterShape(offset) {
+    offset.x += this.x;
+    offset.y += this.y;
+    // '10,0 0,20 10,40 60,40 70,20 60,0'
+    return ShapeInfo.polygon([offset.x + 10, offset.y + 0, offset.x + 0, offset.y + 20, offset.x + 10, offset.y + 40, offset.x + 60, offset.y + 40, offset.x + 70, offset.y + 20, offset.x + 60, offset.y + 0]);
+  }
+
 
   /**
    * Direwolf-specific methods

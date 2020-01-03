@@ -7,8 +7,8 @@
   "main": "index.js",
   "module": "index.js",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/direwolf/direwolf-modeler"
+    "type": "git",
+    "url": "https://github.com/direwolf/direwolf-modeler"
   },
   "scripts": {
     "start": "es-dev-server --app-index demo/index.html --node-resolve --open --watch",
@@ -19,12 +19,13 @@
     "@material/mwc-tab": "^0.9.0",
     "@material/mwc-tab-bar": "^0.9.0",
     "@material/mwc-top-app-bar-fixed": "^0.9.0",
+    "direwolf-elements": "~0.0.0",
+    "kld-intersections": "^0.6.0",
     "lit-element": "^2.0.1",
     "lit-html": "^1.0.0",
     "svg.js": "^2.7.1",
     "y-websocket": "^1.0.4",
-    "yjs": "^13.0.0-99",
-    "direwolf-elements": "~0.0.0"
+    "yjs": "^13.0.0-99"
   },
   "devDependencies": {
     "es-dev-server": "^1.5.0"

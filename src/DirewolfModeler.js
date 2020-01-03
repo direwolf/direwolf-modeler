@@ -6,6 +6,7 @@ import '@material/mwc-tab';
 import '@material/mwc-tab-bar';
 import '@material/mwc-icon/mwc-icon.js';
 import 'svg.js/dist/svg.js';
+import {ShapeInfo, Intersection} from 'kld-intersections';
 import * as Y from 'yjs'
 
 import { DirewolfNodeMixin } from 'direwolf-elements/direwolf-node-mixin.js';
@@ -1201,6 +1202,8 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
               }
             });
           } else {
+            // TODO: eliminate this binary option, ask for default connection type of a model element
+            // instead, use .draggedEdgeType()
             if (this._modelNodes[closestModelNode.id].draggedEdgeType === 'data-flow') {
               this.modelState = 'CONNECTING-DATA-FLOW';
             } else {
@@ -1413,9 +1416,73 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
           modelNode.x = this._currentDragPosition.x + (e.detail.dx / scale);
           modelNode.y = this._currentDragPosition.y + (e.detail.dy / scale);
 
-          var affectedNodes = Array.from(closestModelNode.querySelectorAll('.model-node')).map(function(item) { return item.id; });
+          // get all contained children nodes that we are moving together with the parent
+          let affectedNodes = Array.from(closestModelNode.querySelectorAll('.model-node')).map(function(item) { return item.id; });
           affectedNodes.unshift(closestModelNode.id);
 
+
+          // TODO: iterate through all edges and collect all that are affected. Then adjust the start and ends of the ones affected.
+          let affectedEdges = [];
+          // first, collect all edges that are linking from or to any affected nodes
+          Object.keys(this._modelEdges).forEach(key => {
+            let modelEdge = this._modelEdges[key];
+            if ((affectedNodes.indexOf(modelEdge.origin) > -1) || (affectedNodes.indexOf(modelEdge.target) > -1)) {
+              affectedEdges.push(modelEdge);
+            }
+          });
+          // second, reposition all affected edges
+          affectedEdges.forEach(affectedEdge => {
+            const originNode = this._modelNodes[affectedEdge.origin];
+            const originCenter = this._getNodeCenter(originNode.element);
+            // now get the absolute position of the node the edge is starting at
+            let originOffset = {x: 0, y: 0};
+            let currentParentId = originNode.parentId;
+            while (currentParentId !== 'root') {
+              const currentParent = this._modelNodes[currentParentId];
+              originOffset.x += currentParent.x;
+              originOffset.y += currentParent.y;
+              currentParentId = this._modelNodes[currentParentId].parentId;
+            }
+            const originShape = originNode.getOuterShape(originOffset);
+
+            const targetNode = this._modelNodes[affectedEdge.target];
+            const targetCenter = this._getNodeCenter(targetNode.element);
+            // now get the absolute position of the node the edge is starting at
+            let targetOffset = {x: 0, y: 0};
+            currentParentId = targetNode.parentId;
+            while (currentParentId !== 'root') {
+              const currentParent = this._modelNodes[currentParentId];
+              targetOffset.x += currentParent.x;
+              targetOffset.y += currentParent.y;
+              currentParentId = this._modelNodes[currentParentId].parentId;
+            }
+            const targetShape = targetNode.getOuterShape(targetOffset);
+
+            const line = ShapeInfo.line([originCenter.x, originCenter.y, targetCenter.x, targetCenter.y]);
+
+            const originIntersections = Intersection.intersect(originShape, line);
+            // there are no intersections if the line is within the edge
+            if (originIntersections.status !== 'Inside') {
+              let intersection = {};
+              intersection.x = originIntersections.points[0].x;
+              intersection.y = originIntersections.points[0].y;
+              affectedEdge.start = [intersection.x, intersection.y];
+            }
+
+            const targetIntersections = Intersection.intersect(targetShape, line);
+            // there are no intersections if the line is within the edge
+            if (targetIntersections.status !== 'Inside') {
+              let intersection = {};
+              intersection.x = targetIntersections.points[0].x;
+              intersection.y = targetIntersections.points[0].y;
+              affectedEdge.end = [intersection.x, intersection.y];
+            }
+
+            affectedEdge.element.front();
+          });
+
+
+          /*
           // check if there are any edges from/to this model node and its children
           Object.keys(this._modelEdges).forEach(key => {
             let modelEdge = this._modelEdges[key];
@@ -1423,12 +1490,47 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
               // translate port and edge start
               this._originalModelPortPositions.forEach(portPosition => {
 
+                // portPosition.id describes the id of the edge the port is sitting on
+                //TODO: remove the "port" behavior and make ports a property of a special edge
                 let edgeWithPort = this._modelEdges[portPosition.id];
                 var pointArray = [];
                 pointArray[0] = portPosition.start[0] + (e.detail.dx / scale);
                 pointArray[1] = portPosition.start[1] + (e.detail.dy / scale);
                 edgeWithPort.start = pointArray;
                 edgeWithPort.element.front();
+
+                // translate edge start
+                const originNode = this._modelNodes[modelEdge.origin];
+                var nodeCenter = this._getNodeCenter(originNode.element);
+                var line = {};
+                line.x1 = nodeCenter.x;
+                line.y1 = nodeCenter.y;
+                line.x2 = parseInt(modelEdge.end[0]);
+                line.y2 = parseInt(modelEdge.end[1]);
+
+                // now get the absolute position of the node the edge is starting at
+                let offset = {x: 0, y: 0};
+                let currentParentId = originNode.parentId;
+                while (currentParentId !== 'root') {
+                  const currentParent = this._modelNodes[currentParentId];
+                  offset.x += currentParent.x;
+                  offset.y += currentParent.y;
+                  currentParentId = this._modelNodes[currentParentId].parentId;
+                }
+
+                const targetShape = originNode.getOuterShape(offset);
+                const line2 = ShapeInfo.line([line.x1, line.y1, line.x2, line.y2]);
+                const intersections = Intersection.intersect(targetShape, line2);
+
+                // there are no interesctions if the line is within the edge
+                if (intersections.status !== 'Inside') {
+                  let intersection = {};
+                  intersection.x = intersections.points[0].x;
+                  intersection.y = intersections.points[0].y;
+                  modelEdge.start = [intersection.x, intersection.y];
+                }
+
+                modelEdge.element.front();
 
               });
             } else if (affectedNodes.indexOf(modelEdge.target) > -1) {
@@ -1441,16 +1543,33 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
               line.y2 = nodeCenter.y;
 
               var targetNode = this._modelNodes[modelEdge.target];
-              var intersection = this._getLineNodeIntersection(line, targetNode.element);
+              //var intersection = this._getLineNodeIntersection(line, targetNode.element);
 
-              // intersection is undefined if the line is within the rectangle
-              if (intersection) {
+              let offset = {x: 0, y: 0};
+              let currentParentId = targetNode.parentId;
+              while (currentParentId !== 'root') {
+                const currentParent = this._modelNodes[currentParentId];
+                offset.x += currentParent.x;
+                offset.y += currentParent.y;
+                currentParentId = this._modelNodes[currentParentId].parentId;
+              }
+
+              const targetShape = targetNode.getOuterShape(offset);
+              const line2 = ShapeInfo.line([line.x1, line.y1, line.x2, line.y2]);
+              const intersections = Intersection.intersect(targetShape, line2);
+
+              // there are no interesctions if the line is within the edge
+              if (intersections.status !== 'Inside') {
+                let intersection = {};
+                intersection.x = intersections.points[0].x;
+                intersection.y = intersections.points[0].y;
                 modelEdge.end = [intersection.x, intersection.y];
               }
 
               modelEdge.element.front();
             }
           });
+          */
 
           // move manipulators
 
@@ -1505,7 +1624,54 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
         if (nodeAtPoint) {
           // the edge was ended on a model node: connect nodes!
+          const originNode = this._modelNodes[this._edgeOrigin.id];
+          const originCenter = this._getNodeCenter(originNode.element);
+          // now get the absolute position of the node the edge is starting at
+          let originOffset = {x: 0, y: 0};
+          let currentParentId = originNode.parentId;
+          while (currentParentId !== 'root') {
+            const currentParent = this._modelNodes[currentParentId];
+            originOffset.x += currentParent.x;
+            originOffset.y += currentParent.y;
+            currentParentId = this._modelNodes[currentParentId].parentId;
+          }
+          const originShape = originNode.getOuterShape(originOffset);
 
+          const targetNode = this._modelNodes[nodeAtPoint.id];
+          const targetCenter = this._getNodeCenter(targetNode.element);
+          // now get the absolute position of the node the edge is starting at
+          let targetOffset = {x: 0, y: 0};
+          currentParentId = targetNode.parentId;
+          while (currentParentId !== 'root') {
+            const currentParent = this._modelNodes[currentParentId];
+            targetOffset.x += currentParent.x;
+            targetOffset.y += currentParent.y;
+            currentParentId = this._modelNodes[currentParentId].parentId;
+          }
+          const targetShape = targetNode.getOuterShape(targetOffset);
+
+          const line = ShapeInfo.line([originCenter.x, originCenter.y, targetCenter.x, targetCenter.y]);
+
+          const originIntersections = Intersection.intersect(originShape, line);
+          // there are no intersections if the line is within the edge
+          let start = {x: originCenter.x, y: originCenter.y};
+          if (originIntersections.status !== 'Inside') {
+            start.x = originIntersections.points[0].x;
+            start.y = originIntersections.points[0].y;
+          }
+
+          const targetIntersections = Intersection.intersect(targetShape, line);
+          // there are no intersections if the line is within the edge
+          let end = {x: targetCenter.x, y: targetCenter.y};
+          if (targetIntersections.status !== 'Inside') {
+            end.x = targetIntersections.points[0].x;
+            end.y = targetIntersections.points[0].y;
+          }
+
+          //affectedEdge.element.front();
+
+
+          /*
           let line = {};
           line.x1 = parseInt(this._pendingEdge.node.getAttribute('x1'));
           line.y1 = parseInt(this._pendingEdge.node.getAttribute('y1'));
@@ -1513,20 +1679,22 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
           line.y2 = parseInt(this._pendingEdge.node.getAttribute('y2'));
 
           let intersection = this._getLineNodeIntersection(line, nodeAtPoint.instance);
+          */
 
           // share state
           let syncedNavigationFlow = {};
           syncedNavigationFlow.id = this.uuidv4(); // generate new id
-          syncedNavigationFlow.dataType = 'navigation-flow';
+          syncedNavigationFlow.dataType = 'istar-refinement-or'; //'navigation-flow';
           syncedNavigationFlow.origin = this._edgeOrigin.id;
           syncedNavigationFlow.target = nodeAtPoint.id;
 
           // first create a shared state map that gets propagated to the peers
           let sharedState = this.direwolfSpace.sharedStates.set(syncedNavigationFlow.id, new Y.Map());
-          sharedState.set('start', [line.x1, line.y1]);
-          if (intersection) {
-            sharedState.set('end', [intersection.x, intersection.y]);
-          }
+          sharedState.set('start', [start.x, start.y]);
+          sharedState.set('end', [end.x, end.y]);
+          // if (intersection) {
+          //   sharedState.set('end', [intersection.x, intersection.y]);
+          // }
 
           this._syncedModelEdges.set(syncedNavigationFlow.id, syncedNavigationFlow);
 

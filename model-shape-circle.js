@@ -1,4 +1,5 @@
 import { ModelElement } from './model-element.js';
+import {ShapeInfo} from 'kld-intersections';
 
 export class ModelShapeCircle extends ModelElement {
 
@@ -50,6 +51,10 @@ export class ModelShapeCircle extends ModelElement {
 
   get height() {
     return this.diameter;
+  }
+
+  getOuterShape(offset) {
+    return ShapeInfo.circle({cx: (offset.x + this.x + this.circle.attr('cx')), cy: (offset.y + this.y + this.circle.attr('cy')), r: this.circle.attr('r')});
   }
 
 
