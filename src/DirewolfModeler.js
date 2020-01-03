@@ -666,8 +666,8 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
   }
 
   _handleKeydown(e) {
-    if ((e.path[0].nodeName !== 'INPUT') && (e.keyCode === 8)) {
-      // delete key pressed
+    if ((e.path[0].nodeName !== 'INPUT') && ([8, 46].includes(e.keyCode))) {
+      // backspace or delete key pressed
       this._removeSelectedElement();
     }
   }
