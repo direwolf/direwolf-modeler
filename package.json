@@ -1,6 +1,6 @@
 {
   "name": "direwolf-modeler",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "The Direwolf Modeler is an online collaborative modeling environment.",
   "author": "direwolf-modeler",
   "license": "MIT",
@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@material/mwc-icon-button": "^0.9.0",
-    "@material/mwc-tab": "^0.9.0",
-    "@material/mwc-tab-bar": "^0.9.0",
+    "@material/mwc-tab": "^0.12.0",
+    "@material/mwc-tab-bar": "^0.12.0",
     "@material/mwc-top-app-bar-fixed": "^0.9.0",
     "direwolf-elements": "~0.0.0",
     "kld-intersections": "^0.6.0",
