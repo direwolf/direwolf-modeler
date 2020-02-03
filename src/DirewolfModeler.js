@@ -563,7 +563,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
                 <path d="M0,0 L0,6 L9,3 z" fill="black"></path>
               </marker>
 
-              <pattern id="background" x="0" y="0" width="0.1" height="0.1">
+              <pattern id="background" x="0" y="0" width="0.05" height="0.05">
                 <g fill-rule="evenodd">
                   <g fill="#bbbbbb" fill-opacity="0.4">
                     <path opacity=".5" d="M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z"></path>
@@ -573,7 +573,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
               </pattern>
             </defs>
             <g id="model-viewport" transform="translate(0,0) scale(1)">
-              <rect id="model-background" fill="url(#background)" width="1000" height="1000"></rect>
+              <rect id="model-background" fill="url(#background)" width="2000" height="2000" x="0" y="0"></rect>
               <g id="model-manipulators" visibility="hidden" class="animated fadeIn">
                 <rect id="manipulator-border" x="5" y="5" stroke="black" stroke-width="1" stroke-dasharray="5, 5" fill="none" shape-rendering="crispEdges"></rect>
                 <rect id="manipulator-n" class="model-manipulator" width="10" height="10" fill="blue"></rect>
@@ -638,6 +638,9 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     this._manipulatorSW = this.shadowRoot.getElementById('manipulator-sw');
     this._manipulatorW = this.shadowRoot.getElementById('manipulator-w');
     this._manipulatorNW = this.shadowRoot.getElementById('manipulator-nw');
+
+    // set background size
+    //this._modelBackground.setAttribute('width', "500px");
 
     this.fireDirewolfChange();
   }
@@ -1124,6 +1127,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
       if ((e.target === this._modelBackground) || (e.target === this._modelCanvas)) {
 
+        // move whole model
         modelViewport.transform({x: this._viewPortTranslation.x + e.detail.dx, y: this._viewPortTranslation.y + e.detail.dy});
 
       } else if (e.target.classList.contains('model-port')) {
@@ -1235,8 +1239,13 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
       if ((e.target === this._modelBackground) || (e.target === this._modelCanvas)) {
 
-        // translate viewport
+        // move whole viewport
         modelViewport.transform({x: this._viewPortTranslation.x + e.detail.dx, y: this._viewPortTranslation.y + e.detail.dy});
+        // move background
+        let offsetX = (this._viewPortTranslation.x + e.detail.dx)
+        let offsetY= (this._viewPortTranslation.y + e.detail.dy)
+        this._modelBackground.setAttribute('x', Math.ceil(offsetX / 100) * -100);
+        this._modelBackground.setAttribute('y', Math.ceil(offsetY / 100) * -100);
 
       } else if ((this.modelState === 'CONNECTING-INTERACTION-FLOW') || (this.modelState === 'CONNECTING-DATA-FLOW')) {
 
@@ -1615,6 +1624,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
     } else if (e.detail.state === 'end') {
       if ((e.target === this._modelBackground) || (e.target === this._modelCanvas)) {
+        // store viewport translation, i.e. how much the viewport was moved in total
         this._viewPortTranslation.x = this._viewPortTranslation.x + e.detail.dx;
         this._viewPortTranslation.y = this._viewPortTranslation.y + e.detail.dy;
       } else if (this.modelState === 'CONNECTING-INTERACTION-FLOW') {
