@@ -968,7 +968,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     var a = document.createElement('a');
     a.style.visibility = 'hidden';
     a.href = 'data:image/svg+xml; charset=utf8, ' + encodeURIComponent(svgData.replace(/></g, '>\n\r<'));
-    a.download = 'Direwolf.exported.svg';
+    a.download = `Direwolf-${this.direwolfSpace.space}.exported.svg`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
