@@ -950,6 +950,8 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
     // remove model background
     clone.querySelector('#model-background').remove()
+    // remove manipulators
+    clone.querySelector('#model-manipulators').remove();
 
     // KUDOS to https://stackoverflow.com/posts/38481556/
     // though we removed the parseStyles part as we do not use CSS classes in our SVG.
