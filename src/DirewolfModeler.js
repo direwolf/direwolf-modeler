@@ -1244,8 +1244,8 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
         // move whole viewport
         modelViewport.transform({x: this._viewPortTranslation.x + e.detail.dx, y: this._viewPortTranslation.y + e.detail.dy});
         // move background
-        let offsetX = (this._viewPortTranslation.x + e.detail.dx)
-        let offsetY= (this._viewPortTranslation.y + e.detail.dy)
+        let offsetX = (this._viewPortTranslation.x + e.detail.dx) / scale;
+        let offsetY= (this._viewPortTranslation.y + e.detail.dy) / scale;
         this._modelBackground.setAttribute('x', Math.ceil(offsetX / 100) * -100);
         this._modelBackground.setAttribute('y', Math.ceil(offsetY / 100) * -100);
 
