@@ -709,7 +709,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     this._selectedElementTitle = '';
 
     let match = false;
-    let nodeAtPoint = this._getTopmostModelNodeAtPoint(e.x, e.y);
+    let nodeAtPoint = this._getTopmostModelNodeAtPoint(e.detail.x, e.detail.y);
     if (nodeAtPoint) {
       let closestModelNode = nodeAtPoint.closest('.model-node');
       if (closestModelNode) {
@@ -750,7 +750,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     point.x = point.x - this._draggedPaletteItem.offsetX - 0.5;
     point.y = point.y - this._draggedPaletteItem.offsetY - 0.5;
 
-    let nodeAtPoint = this._getTopmostModelNodeAtPoint(e.offsetX, e.offsetY);
+    let nodeAtPoint = this._getTopmostModelNodeAtPoint(e.detail.x, e.detail.y);
     // go up the hierarchy to find a node that accepts this child
     while (nodeAtPoint && (nodeAtPoint !== this._modelViewport)) {
       if (this._modelNodes[nodeAtPoint.id].acceptsChild(elementType)) {
