@@ -15,9 +15,9 @@ export class ModelShapeHexagon extends ModelShapeRect {
   createSVGElement(viewport) {
     let group = super.createSVGElement(viewport);
 
-    this.rect.attr({'fill-opacity': 0}).stroke({ width: 0});
+    this.rect.attr({'fill-opacity': 0}).stroke({width: 0});
 
-    this.polygon = group.polygon('10,0 0,20 10,40 60,40 70,20 60,0').fill('lightgray').stroke({width: 1});
+    this.polygon = group.polygon('10,0 0,20 10,40 60,40 70,20 60,0').fill('lightgray').stroke({width: 1, color: 'black'});
 
     return group;
   }
@@ -34,7 +34,7 @@ export class ModelShapeHexagon extends ModelShapeRect {
   _resize() {
     let width = this.width;
     let height = this.height;
-
+    
     // a resize only makes sense if both width and height are already defined...
     if (width && height) {
       this.polygon.plot([[10,0], [0,(height / 2)], [10,height], [(width - 10),height], [width,(height / 2)], [(width - 10),0]]);

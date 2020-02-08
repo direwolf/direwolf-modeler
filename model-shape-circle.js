@@ -71,8 +71,7 @@ export class ModelShapeCircle extends ModelElement {
       }
     }
 
-    this.element.transform({x: this.x});
-    this.element.transform({y: this.y});
+    this.element.transform({translateX: this.x, translateY: this.y});
     this.circle.radius(this.diameter / 2);
   }
 
@@ -80,10 +79,10 @@ export class ModelShapeCircle extends ModelElement {
     event.keysChanged.forEach((key) => {
       switch (key) {
         case 'x':
-          this.element.transform({x: event.target.get(key)});
+          this.element.transform({translateX: event.target.get(key), translateY: this.y});
           break;
         case 'y':
-          this.element.transform({y: event.target.get(key)});
+          this.element.transform({translateX: this.x, translateY: event.target.get(key)});
           break;
         case 'diameter':
           this.circle.radius(event.target.get(key) / 2);

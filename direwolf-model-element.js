@@ -1,5 +1,4 @@
 import 'direwolf-elements/direwolf-node-mixin.js';
-import 'svg.js/dist/svg.js';
 
 class DirewolfModelElement extends DirewolfNodeMixin(Object) {
 

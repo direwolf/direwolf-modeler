@@ -75,8 +75,7 @@ export class ModelShapeRect extends ModelElement {
       }
     }
 
-    this.element.transform({x: this.x});
-    this.element.transform({y: this.y});
+    this.element.transform({translateX: this.x, translateY: this.y});
     this.rect.width(this.width);
     this.rect.height(this.height);
   }
@@ -85,10 +84,10 @@ export class ModelShapeRect extends ModelElement {
     event.keysChanged.forEach((key) => {
       switch (key) {
         case 'x':
-          this.element.transform({x: event.target.get(key)});
+          this.element.transform({translateX: event.target.get(key), translateY: this.y});
           break;
         case 'y':
-          this.element.transform({y: event.target.get(key)});
+          this.element.transform({translateX: this.x, translateY: event.target.get(key)});
           break;
         case 'width':
           this.rect.width(event.target.get(key));

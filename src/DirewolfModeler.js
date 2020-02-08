@@ -5,9 +5,9 @@ import '@material/mwc-top-app-bar-fixed/mwc-top-app-bar-fixed.js';
 import '@material/mwc-tab';
 import '@material/mwc-tab-bar';
 import '@material/mwc-icon/mwc-icon.js';
-import 'svg.js/dist/svg.js';
 import {ShapeInfo, Intersection} from 'kld-intersections';
 import * as Y from 'yjs'
+import { SVG } from '@svgdotjs/svg.js'
 
 import { DirewolfNodeMixin } from 'direwolf-elements/direwolf-node-mixin.js';
 import BindingRegistry from '../binding-registry.js';
@@ -743,7 +743,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     // the element type is the model type (e.g. "view-container")
     let elementType = this._draggedPaletteItem.type;
 
-    let modelViewport = SVG.adopt(this._modelViewport);
+    let modelViewport = SVG(this._modelViewport);
     let viewport = modelViewport;
     viewport.node.id = 'root';
     let point = viewport.point(e.detail.x, e.detail.y);
@@ -975,12 +975,12 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
   }
 
   _handleZoomIn(e) {
-    let viewport = SVG.adopt(this._modelViewport);
+    let viewport = SVG(this._modelViewport);
     viewport.transform({ scale: viewport.transform('scaleX') + 0.25 });
   }
 
   _handleZoomOut(e) {
-    let viewport = SVG.adopt(this._modelViewport);
+    let viewport = SVG(this._modelViewport);
     viewport.transform({ scale: viewport.transform('scaleX') - 0.25 });
   }
 
@@ -1124,7 +1124,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
    * the viewport as well as dragging model nodes and edges.
    */
   _handleModelTrack(e) {
-    var modelViewport = SVG.adopt(this._modelViewport);
+    var modelViewport = SVG(this._modelViewport);
     var point = modelViewport.point(e.detail.x, e.detail.y);
     var scale = modelViewport.transform('scaleX');
 
@@ -1133,7 +1133,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       if ((e.target === this._modelBackground) || (e.target === this._modelCanvas)) {
 
         // move whole model
-        modelViewport.transform({x: this._viewPortTranslation.x + e.detail.dx, y: this._viewPortTranslation.y + e.detail.dy});
+        modelViewport.transform({translateX: this._viewPortTranslation.x + e.detail.dx, translateY: this._viewPortTranslation.y + e.detail.dy});
 
       } else if (e.target.classList.contains('model-port')) {
 
@@ -1191,11 +1191,11 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
             // start connecting state
             this.modelState = 'DRAGGING-NODE';
 
-            var modelNode = SVG.adopt(closestModelNode);
+            var modelNode = SVG(closestModelNode);
 
             this._modelManipulators.classList.remove('animated');
 
-            this._currentDragPosition = {x: modelNode.transform('x'), y: modelNode.transform('y')};
+            this._currentDragPosition = {x: modelNode.transform('translateX'), y: modelNode.transform('translateY')};
 
             this._originalModelPortPositions = [];
             //var affectedNodes = Array.from(this._currentManipulationTarget.querySelectorAll('.model-node'));
@@ -1245,7 +1245,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       if ((e.target === this._modelBackground) || (e.target === this._modelCanvas)) {
 
         // move whole viewport
-        modelViewport.transform({x: this._viewPortTranslation.x + e.detail.dx, y: this._viewPortTranslation.y + e.detail.dy});
+        modelViewport.transform({translateX: this._viewPortTranslation.x + e.detail.dx, translateY: this._viewPortTranslation.y + e.detail.dy});
         // move background
         let offsetX = (this._viewPortTranslation.x + e.detail.dx) / scale;
         let offsetY= (this._viewPortTranslation.y + e.detail.dy) / scale;
@@ -1400,7 +1400,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
           let modelEdge = this._modelEdges[key];
           if (modelEdge.target === this._currentManipulationTarget) {
             // translate edge end
-            var nodeCenter = this._getNodeCenter(SVG.adopt(this._currentManipulationTarget));
+            var nodeCenter = this._getNodeCenter(SVG(this._currentManipulationTarget));
             var line = {};
             line.x1 = parseInt(modelEdge.line.getAttribute('x1'));
             line.y1 = parseInt(modelEdge.line.getAttribute('y1'));
@@ -1822,11 +1822,11 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     var match = false;
 
     nodeArray.some(item => {
-      var modelNode = SVG.adopt(item);
+      var modelNode = SVG(item);
       var pointInNodeCoordinates = modelNode.point(e.x, e.y);
       var boundingBox = item.getBBox();
       var rect = {min: {x: boundingBox.x, y: boundingBox.y}, max: {x: boundingBox.x + boundingBox.width, y: boundingBox.y + boundingBox.height}};
-      var modelViewport = SVG.adopt(this._modelViewport);
+      var modelViewport = SVG(this._modelViewport);
       var scale = modelViewport.transform('scaleX');
       var nearestPoint = this._getNearestPointOnRect(rect, pointInNodeCoordinates.x, pointInNodeCoordinates.y);
 
@@ -1958,7 +1958,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     nodeArray.some(item => {
 
       if (item !== exclude) {
-        var modelNode = SVG.adopt(item);
+        var modelNode = SVG(item);
         var boundingBox = item.getBBox();
         var point = modelNode.point(x, y); // in node coordinates
         //var rect = {x: boundingBox.x, y: boundingBox.y};
@@ -2051,13 +2051,13 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
   _getNodeCenter(modelNode) {
     var boundingBox = modelNode.node.getBBox();
 
-    var x = modelNode.x();
-    var y = modelNode.y();
+    var x = modelNode.transform('translateX');
+    var y = modelNode.transform('translateY');
     var parent = modelNode;
     while (parent = parent.parent()) {
       if (parent.node.classList && (parent.node.classList.contains('model-node'))) {
-        x += parent.x();
-        y += parent.y();
+        x += parent.transform('translateX');
+        y += parent.transform('translateY');
       } else {
         break;
       }
@@ -2070,12 +2070,12 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
   }
 
   _getRectInSVGCoordinates(node) {
-    var modelNode = SVG.adopt(node);
+    var modelNode = SVG(node);
     var boundingBox = node.getBBox();
 
     var rect = {};
-    rect.x = modelNode.transform('x');
-    rect.y = modelNode.transform('y');
+    rect.x = modelNode.transform('translateX');
+    rect.y = modelNode.transform('translateY');
     rect.width = boundingBox.width;
     rect.height = boundingBox.height;
 
@@ -2091,13 +2091,13 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     var bbox = node.getBBox();
 
     var modelNode = node.instance;
-    var x = modelNode.x();
-    var y = modelNode.y();
+    var x = modelNode.transform('translateX');
+    var y = modelNode.transform('translateY');
     var parent = modelNode;
     while (parent = parent.parent()) {
       if (parent.node.classList && (parent.node.classList.contains('model-node'))) {
-        x += parent.x();
-        y += parent.y();
+        x += parent.transform('translateX');
+        y += parent.transform('translateY');
       } else {
         break;
       }
@@ -2106,7 +2106,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     let opacity = this._modelNodes[node.id].resizable ? 1 : 0;
     [...this._modelManipulators.querySelectorAll('.model-manipulator')].forEach(item => item.style.opacity = opacity);
 
-    var modelManipulators = SVG.adopt(this._modelManipulators);
+    var modelManipulators = SVG(this._modelManipulators);
 
     this._manipulatorBorder.setAttribute('width', bbox.width + 30);
     this._manipulatorBorder.setAttribute('height', bbox.height + 30);
@@ -2120,11 +2120,10 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     this._manipulatorS.setAttribute('y', bbox.height + 29);
     this._manipulatorSW.setAttribute('y', bbox.height + 29);
     this._manipulatorW.setAttribute('y', ((bbox.height + 40) / 2) - 5);
-    modelManipulators.x(x - 20);
-    modelManipulators.y(y - 20);
+    modelManipulators.transform({translateX: (x - 20), translateY: (y - 20)});
 
     // bring to front and make visible
-    SVG.adopt(this._modelManipulators).front();
+    SVG(this._modelManipulators).front();
     this._modelManipulators.setAttribute('visibility', 'visible');
 
     // show properties
@@ -2368,7 +2367,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     modelNodeElement._parentId = modelNode.parentId;
 
     if (modelNode.parentId === 'root') {
-      modelNodeElement.createSVGElement(SVG.adopt(this._modelViewport));
+      modelNodeElement.createSVGElement(SVG(this._modelViewport));
     } else {
       this._modelNodes[modelNode.parentId].appendModelChild(modelNodeElement);
     }
@@ -2414,7 +2413,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
   _addModelEdge(modelEdge) {
     let createdLocally = true;//(this._lastLocallyCreatedElementId === modelEdge.id) || (this._lastLocallyCreatedElementId === modelEdge.parentId);
 
-    let viewport = SVG.adopt(this._modelViewport);
+    let viewport = SVG(this._modelViewport);
 
     let modelTypeMap = BindingRegistry.modelIFMLTypeMap;
 
