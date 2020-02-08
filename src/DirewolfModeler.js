@@ -1095,11 +1095,14 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       // check if there are any edges from/to this model node, bring them to front
       Object.keys(this._modelEdges).forEach(key => {
         let modelEdge = this._modelEdges[key];
+        modelEdge.element.front();
+        /*
         if (affectedNodesKeys.indexOf(modelEdge.origin) > -1) {
           modelEdge.element.front();
         } else if (affectedNodesKeys.indexOf(modelEdge.target) > -1) {
           modelEdge.element.front();
         }
+        */
       });
 
       // show manipulators
