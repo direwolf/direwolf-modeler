@@ -41,7 +41,6 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       #top-header {
         position: fixed;
         color: white;
-        height: 60px;
         width: 100%;
         z-index: 100;
         --mdc-theme-primary: var(--almost-black);
@@ -60,7 +59,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       }
 
       .app-body {
-        padding-top: 60px;
+        padding-top: 64px;
         box-sizing: border-box;
         display: flex;
         flex-direction: row;
@@ -129,10 +128,10 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       }
 
       .main-view > footer {
-        /*position: fixed;*/
+        position: absolute;
         bottom: 0;
-        left: 260px;
-        right: 270px;
+        left: 0px; /*260px;*/
+        right: 0px; /*270px;*/
         height: 25px;
         padding-left: 10px;
         line-height: 25px;
@@ -563,7 +562,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
                 <path d="M0,0 L0,6 L9,3 z" fill="black"></path>
               </marker>
 
-              <pattern id="background" x="0" y="0" width="0.05" height="0.05">
+              <pattern id="background-pattern" x="0" y="0" width="0.1" height="0.1">
                 <g fill-rule="evenodd">
                   <g fill="#bbbbbb" fill-opacity="0.4">
                     <path opacity=".5" d="M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z"></path>
@@ -573,7 +572,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
               </pattern>
             </defs>
             <g id="model-viewport" transform="translate(0,0) scale(1)">
-              <rect id="model-background" fill="url(#background)" width="2000" height="2000" x="0" y="0"></rect>
+              <rect id="model-background" fill="url(#background-pattern)" width="1000" height="1000" x="0" y="0"></rect>
               <g id="model-manipulators" visibility="hidden" class="animated fadeIn">
                 <rect id="manipulator-border" x="5" y="5" stroke="black" stroke-width="1" stroke-dasharray="5, 5" fill="none" shape-rendering="crispEdges"></rect>
                 <rect id="manipulator-n" class="model-manipulator" width="10" height="10" fill="blue"></rect>
@@ -640,7 +639,8 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     this._manipulatorNW = this.shadowRoot.getElementById('manipulator-nw');
 
     // set background size
-    //this._modelBackground.setAttribute('width', "500px");
+    window.addEventListener('resize', this._updateModelBackgroundSize.bind(this));
+    this._updateModelBackgroundSize();
 
     this.fireDirewolfChange();
   }
@@ -1593,8 +1593,8 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
           let parent = modelNode.element;
           while (parent = parent.parent()) {
             if (parent.node.classList && (parent.node.classList.contains('model-node'))) {
-              x += parent.x();
-              y += parent.y();
+              x += parent.transform('translateX');
+              y += parent.transform('translateY');
             } else {
               break;
             }
@@ -1777,7 +1777,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
         let modelNode = this._modelNodes[closestModelNode.id];
         let clickPosition = closestModelNode.instance.point(e.detail.x, e.detail.y);
 
-        if (this._lastHoveredElement) {
+        if (this._lastHoveredElement && (modelNode.id !== this._lastHoveredElement.id)) {
           // get the position within the node the node was last hovered on
           let point = this._lastHoveredElement.element.point(e.detail.x - (clickPosition.x * scale), e.detail.y - (clickPosition.y * scale));
           modelNode.x = point.x;
@@ -2000,13 +2000,13 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
     var boundingBox = modelNode.node.getBBox();
 
-    var x = modelNode.x();
-    var y = modelNode.y();
+    var x = modelNode.transform('translateX');
+    var y = modelNode.transform('translateY');
     var parent = modelNode;
     while (parent = parent.parent()) {
       if (parent.node.classList && (parent.node.classList.contains('model-node'))) {
-        x += parent.x();
-        y += parent.y();
+        x += parent.transform('translateX');
+        y += parent.transform('translateY');
       } else {
         break;
       }
@@ -2159,6 +2159,19 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
   _handleDragOver(e) {
     console.log('drag over SVG');
     e.preventDefault();
+  }
+
+  _updateModelBackgroundSize() {
+    const pattern = this.shadowRoot.getElementById('background-pattern');
+    const bbox = this._modelCanvas.getBoundingClientRect();
+    const dimension = Math.max(bbox.width, bbox.height);
+
+    // 100 is the max offset of the pattern
+    const repetitions = Math.ceil((dimension + 100) / 1000);
+    pattern.setAttribute('width', 0.1 / repetitions);
+    pattern.setAttribute('height', 0.1 / repetitions)
+    this._modelBackground.setAttribute('width', 1000 * repetitions);
+    this._modelBackground.setAttribute('height', 1000 * repetitions);
   }
 
   uuidv4() {
