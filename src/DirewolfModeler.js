@@ -6,8 +6,8 @@ import '@material/mwc-tab';
 import '@material/mwc-tab-bar';
 import '@material/mwc-icon/mwc-icon.js';
 import {ShapeInfo, Intersection} from 'kld-intersections';
-import * as Y from 'yjs'
-import { SVG } from '@svgdotjs/svg.js'
+import * as Y from 'yjs';
+import { SVG } from '@svgdotjs/svg.js';
 
 import { DirewolfNodeMixin } from 'direwolf-elements/direwolf-node-mixin.js';
 import BindingRegistry from '../binding-registry.js';
