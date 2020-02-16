@@ -45,8 +45,16 @@ export class ModelShapeCircle extends ModelElement {
     return this._minDiameter;
   }
 
+  set width(width) {
+    this.diameter = width;
+  }
+
   get width() {
     return this.diameter;
+  }
+
+  set height(height) {
+    this.diameter = height;
   }
 
   get height() {
