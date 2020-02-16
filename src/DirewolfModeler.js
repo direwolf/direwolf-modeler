@@ -160,6 +160,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
       #store-view, #tree-view {
         display: flex;
+        overflow-y: scroll;
         flex-direction: column;
         align-items: center;
         width: 200px;
