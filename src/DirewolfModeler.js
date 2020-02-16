@@ -693,7 +693,6 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
   _handleDragItemStart(e) {
     this._draggedPaletteItem = e.detail;
-    console.log('I noticed a dragitemstart');
   }
 
   _handleDragItemTrack(e) {
