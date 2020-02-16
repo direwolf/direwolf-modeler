@@ -149,6 +149,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
         font-weight: 500;
         font-size: 12px;
         color: white;
+        --mdc-tab-text-label-color-default: white;
       }
 
       iron-pages {
