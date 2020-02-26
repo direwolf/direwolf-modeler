@@ -5,6 +5,8 @@ import '@material/mwc-top-app-bar-fixed/mwc-top-app-bar-fixed.js';
 import '@material/mwc-tab';
 import '@material/mwc-tab-bar';
 import '@material/mwc-icon/mwc-icon.js';
+import '@material/mwc-dialog';
+import '@material/mwc-button';
 import {ShapeInfo, Intersection} from 'kld-intersections';
 import * as Y from 'yjs';
 import { SVG } from '@svgdotjs/svg.js';
@@ -297,6 +299,13 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       [hidden] {
         display: none;
       }
+
+      #dialog-warning {
+        display: none;
+        margin-top: 10px;
+        color: red;
+        font-size: 11px;
+      }
     `;
   }
 
@@ -487,6 +496,9 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       _keydownListener: {
         type: Object
       },
+      _loadedFile: {
+        type: Object
+      }
     };
   }
 
@@ -508,6 +520,8 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     this._sharedStatesObserver = this._handleSharedStatesChanged.bind(this);
     this._sharedStatesDeepObserver = this._handleSharedStatesDeepChanged.bind(this);
     this._keydownListener = this._handleKeydown.bind(this);
+
+    this._loadedFile = null;
   }
 
   render() {
@@ -546,11 +560,13 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
         <div class="main-view">
           <div id="header">
-            <mwc-icon-button icon="delete_forever" @click=${this._handleDeleteModel} title="Reset entire direwolf space. Refresh page then!"></mwc-icon-button>
-            <mwc-icon-button icon="cloud_download" @click=${this._handleSave} title="Download model as SVG file"></mwc-icon-button>
+            <mwc-icon-button icon="save" @click=${this._handleSave} title="Save model as file"></mwc-icon-button>
+            <mwc-icon-button icon="open_in_browser" @click=${this._handleFile} title="Load model from file"></mwc-icon-button>
+            <mwc-icon-button icon="image" @click=${this._handleExportSVG} title="Export model as SVG file"></mwc-icon-button>
             <mwc-icon-button icon="zoom_in" @click=${this._handleZoomIn} title="Zoom in"></mwc-icon-button>
             <mwc-icon-button icon="zoom_out" @click=${this._handleZoomOut} title="Zoom out"></mwc-icon-button>
             <mwc-icon-button id="delete-button" icon="delete" @click=${this._handleDelete} disabled title="Delete model element"></mwc-icon-button>
+            <mwc-icon-button icon="delete_forever" @click=${this._handleDeleteModel} title="Reset entire direwolf space. Refresh page then!"></mwc-icon-button>
           </div>
 
           <svg id="model-canvas" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"
@@ -616,6 +632,14 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
         </div>
 
       </div>
+
+      <mwc-dialog id="dialog-open" heading="Open file..." @closing=${this._handleFileDialogClosing}>
+        <div>Select a file from your local file system to load its content into the modeler.</div>
+        <input type="file" id="input-upload" accept="application/json" @change=${this._handleFileChange}>
+        <div id="dialog-warning">The file does not contain a Direwolf model. Please select a different file.</div>
+        <mwc-button slot="primaryAction" dialogAction="ok" disabled>Load</mwc-button>
+        <mwc-button slot="secondaryAction" dialogAction="cancel">Cancel</mwc-button>
+      </mwc-dialog>
     `;
   }
 
@@ -947,6 +971,124 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
    *
    */
   _handleSave(e) {
+    let jsonFile = {};
+    jsonFile.space = this.direwolfSpace.space;
+    jsonFile.type = 'iStar 2.0';
+    jsonFile.version = '0.0.6';
+
+    // save nodes
+    jsonFile.nodes = [];
+    this._syncedModelNodes.forEach(item => {
+      // combine global and shared state
+      const modelNode = {...item, 'properties': {...this._modelNodes[item.id].sharedState.toJSON()}};
+      jsonFile.nodes.push(modelNode);
+    });
+
+    // save edges
+    jsonFile.edges = [];
+    this._syncedModelEdges.forEach(item => {
+      // combine global and shared state
+      const modelEdge = {...item, 'properties': {...this._modelEdges[item.id].sharedState.toJSON()}};
+      jsonFile.edges.push(modelEdge);
+    });
+
+    // download file
+    let a = document.createElement('a');
+    a.style.visibility = 'hidden';
+    a.href = 'data:application/json; charset=utf8, ' + encodeURIComponent(JSON.stringify(jsonFile));
+    a.download = `Direwolf-${this.direwolfSpace.space}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  /**
+   * Handles uploading a JSON file with a model.
+   * 
+   * @param {*} e 
+   */
+  _handleFile(e) {
+    const warning = this.shadowRoot.getElementById('dialog-warning');
+    if (Object.keys(this._modelNodes).length > 0) {
+      warning.innerText = 'The canvas is not empty. Please choose a different space or delete all elements.';
+      warning.style.display = 'block';
+    } else {
+      warning.style.display = 'none';
+    }
+    const dialog = this.shadowRoot.getElementById('dialog-open');
+    dialog.open = true;
+  }
+
+  _handleFileChange(e) {
+    var reader = new FileReader();
+    reader.onload = (event) => {
+      if (Object.keys(this._modelNodes).length > 0) {
+        const warning = this.shadowRoot.getElementById('dialog-warning');
+        warning.innerText = 'The canvas is not empty. Please choose a different space or delete all elements.';
+        warning.style.display = 'block';
+      } else {
+        const jsonFile = JSON.parse(event.target.result);
+        // check file integrity, i.e. if the file format is correct
+        const requiredKeys = ['nodes', 'edges'];
+        if (requiredKeys.every(key => Object.keys(jsonFile).includes(key))) {
+          this._loadedFile = jsonFile;
+          const warning = this.shadowRoot.getElementById('dialog-warning');
+          warning.style.display = 'none';
+          const dialog = this.shadowRoot.getElementById('dialog-open');
+          dialog.primaryButton.removeAttribute('disabled');
+        } else {
+          const warning = this.shadowRoot.getElementById('dialog-warning');
+          warning.innerText = 'The file does not contain a Direwolf model. Please select a different file.';
+          warning.style.display = 'block';
+          const dialog = this.shadowRoot.getElementById('dialog-open');
+          dialog.primaryButton.setAttribute('disabled', true);
+        }
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  }
+
+  _handleFileDialogClosing(e) {
+    if (e.detail.action === 'ok') {
+      // load file
+      
+      // nodes
+      this._loadedFile.nodes.forEach(node => {
+        let sharedState = new Y.Map();
+        Object.keys(node.properties).forEach(key => {
+          sharedState.set(key, node.properties[key]);
+        });
+        this.direwolfSpace.sharedStates.set(node.id, sharedState);
+
+        // share the main info about the model element
+        delete node.properties;
+        this._syncedModelNodes.set(node.id, node);
+      });
+
+      // edges
+      this._loadedFile.edges.forEach(edge => {
+        let sharedState = new Y.Map();
+        Object.keys(edge.properties).forEach(key => {
+          sharedState.set(key, edge.properties[key]);
+        });
+        this.direwolfSpace.sharedStates.set(edge.id, sharedState);
+
+        // share the main info about the model element
+        delete edge.properties;
+        this._syncedModelEdges.set(edge.id, edge);
+      });
+    }
+
+    // reset form
+    this._loadedFile = null;
+    this.shadowRoot.getElementById('input-upload').value = null;
+  }
+
+  /**
+   * Handles tapping the export button in the app bar.
+   *
+   */
+  _handleExportSVG(e) {
     var clone = this._modelCanvas.cloneNode(true);
 
     // remove model background
