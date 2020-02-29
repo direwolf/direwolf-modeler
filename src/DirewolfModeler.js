@@ -300,6 +300,10 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
         display: none;
       }
 
+      #input-upload {
+        margin-top: 10px;
+      }
+
       #dialog-warning {
         display: none;
         margin-top: 10px;
@@ -1053,17 +1057,30 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       // load file
       
       // nodes
-      this._loadedFile.nodes.forEach(node => {
-        let sharedState = new Y.Map();
-        Object.keys(node.properties).forEach(key => {
-          sharedState.set(key, node.properties[key]);
-        });
-        this.direwolfSpace.sharedStates.set(node.id, sharedState);
+      let deferredNodes = [...this._loadedFile.nodes];
+      let action = true;
+      while (action && (deferredNodes.length > 0)) {
+        action = false;
+        deferredNodes.some(node => {
+          if ((node.parentId !== 'root') && !this._syncedModelNodes.get(node.parentId)) {
+            // the parent has not yet been rendered
+          } else {
+            let sharedState = new Y.Map();
+            Object.keys(node.properties).forEach(key => {
+              sharedState.set(key, node.properties[key]);
+            });
+            this.direwolfSpace.sharedStates.set(node.id, sharedState);
 
-        // share the main info about the model element
-        delete node.properties;
-        this._syncedModelNodes.set(node.id, node);
-      });
+            // share the main info about the model element
+            delete node.properties;
+            this._syncedModelNodes.set(node.id, node);
+
+            deferredNodes.splice(deferredNodes.indexOf(node), 1);
+            action = true;
+            return true;
+          }
+        });
+      }
 
       // edges
       this._loadedFile.edges.forEach(edge => {
