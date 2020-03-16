@@ -14,6 +14,7 @@ import { SVG } from '@svgdotjs/svg.js';
 import { DirewolfNodeMixin } from 'direwolf-elements/direwolf-node-mixin.js';
 import BindingRegistry from '../binding-registry.js';
 import '../element-properties-panel';
+import './tree-view';
 
 /**
  * `direwolf-modeler`
@@ -167,6 +168,10 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
         flex-direction: column;
         align-items: center;
         width: 200px;
+      }
+
+      #tree-view {
+        margin-top: 15px;
       }
 
       #palettes {
@@ -323,6 +328,9 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
        */
       addPaletteEnabled: {
         type: Boolean,
+      },
+      activePaletteTabIndex: {
+        type: Number,
       },
       selectedLeftDrawerTab: {
         type: String,
@@ -510,6 +518,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     super();
     this.title = 'Interaction Flow Designer';
     this.addPaletteEnabled = false;
+    this.activePaletteTabIndex = 0;
     this.selectedLeftDrawerTab = 'store';
     this.selectedRightDrawerTab = 'properties';
     this.syncPrefix = 'model';
@@ -536,19 +545,12 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
       <div class="app-body">
         <div class="drawer">
-          <mwc-tab-bar class="tabs">
+          <mwc-tab-bar class="tabs" @MDCTabBar:activated=${e => (this.activePaletteTabIndex = e.detail.index)}>
             <mwc-tab label="Store"></mwc-tab>
             <mwc-tab label="Tree"></mwc-tab>
           </mwc-tab-bar>
 
-          <div id="store-view">
-            <div id="palettes">
-              <slot name="palettes" id="palettes-slot" @slotchange=${this._handleSlotChange}></slot>
-              <template is="dom-if" if="[[addPaletteEnabled]]">
-                <paper-button id="add-elements-button" on-tap="_handleAddElementsButtonTap" raised=""><iron-icon icon="add"></iron-icon> Add Elements</paper-button>
-              </template>
-            </div>
-          </div>
+          ${this.renderPaletteTabContent()}
 
 <!--
           <iron-pages attr-for-selected="name" selected-attribute="visible" selected="[[selectedLeftDrawerTab]]">
@@ -644,6 +646,32 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
         <mwc-button slot="primaryAction" dialogAction="ok" disabled>Load</mwc-button>
         <mwc-button slot="secondaryAction" dialogAction="cancel">Cancel</mwc-button>
       </mwc-dialog>
+    `;
+  }
+
+  renderPaletteTabContent() {
+    if (this.activePaletteTabIndex === 0) return this.renderPalettes();
+    else if (this.activePaletteTabIndex === 1) return this.renderTree();
+  }
+
+  renderPalettes() {
+    return html`
+      <div id="store-view">
+        <div id="palettes">
+          <slot name="palettes" id="palettes-slot" @slotchange=${this._handleSlotChange}></slot>
+          <template is="dom-if" if="[[addPaletteEnabled]]">
+            <paper-button id="add-elements-button" on-tap="_handleAddElementsButtonTap" raised=""><iron-icon icon="add"></iron-icon> Add Elements</paper-button>
+          </template>
+        </div>
+      </div>
+    `
+  }
+
+  renderTree() {
+    return html`
+      <div id="tree-view">
+        <tree-view .data="${this._modelNodesDataTree}"></tree-view>
+      </div>
     `;
   }
 
