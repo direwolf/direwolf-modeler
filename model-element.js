@@ -29,6 +29,10 @@ export class ModelElement extends DirewolfNodeMixin(Object) {
     return this._id;
   }
 
+  get descriptiveName() {
+    return 'Element';
+  }
+
   getChildrenArray() {
     return [];
   }

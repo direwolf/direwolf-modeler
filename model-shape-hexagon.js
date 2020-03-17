@@ -12,6 +12,10 @@ export class ModelShapeHexagon extends ModelShapeRect {
     this._height = 40;
   }
 
+  get descriptiveName() {
+    return 'Hexagon';
+  }
+
   createSVGElement(viewport) {
     let group = super.createSVGElement(viewport);
 

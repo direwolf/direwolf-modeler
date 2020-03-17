@@ -8,6 +8,10 @@ export class ModelShapePath extends ModelElement {
     this._pathArray = pathArray;
   }
 
+  get descriptiveName() {
+    return 'Path';
+  }
+
   createSVGElement(viewport) {
     let group = super.createSVGElement(viewport);
     group.addClass('model-edge');

@@ -549,19 +549,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
             <mwc-tab label="Store"></mwc-tab>
             <mwc-tab label="Tree"></mwc-tab>
           </mwc-tab-bar>
-
           ${this.renderPaletteTabContent()}
-
-<!--
-          <iron-pages attr-for-selected="name" selected-attribute="visible" selected="[[selectedLeftDrawerTab]]">
-            <div id="store-view" name="store">
-
-            </div>
-            <div id="tree-view" name="tree">
-              <tree-view data="[[_modelNodesDataTree]]"></tree-view>
-            </div>
-          </iron-pages>
--->
         </div>
 
         <div class="main-view">
@@ -659,9 +647,9 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       <div id="store-view">
         <div id="palettes">
           <slot name="palettes" id="palettes-slot" @slotchange=${this._handleSlotChange}></slot>
-          <template is="dom-if" if="[[addPaletteEnabled]]">
+          ${this.addPaletteEnabled ? html`
             <paper-button id="add-elements-button" on-tap="_handleAddElementsButtonTap" raised=""><iron-icon icon="add"></iron-icon> Add Elements</paper-button>
-          </template>
+          ` : html``}
         </div>
       </div>
     `
@@ -739,10 +727,13 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
    */
   _handleSlotChange(e) {
     e.target.assignedNodes().forEach(node => {
-      node.addEventListener('dragitemstart', this._handleDragItemStart.bind(this));
-      node.addEventListener('dragitemtrack', this._handleDragItemTrack.bind(this));
-      node.addEventListener('dragitemend', this._handleDragItemEnd.bind(this));
-      node.addEventListener('itemclick', this._handlePaletteItemClick.bind(this));
+      if (!node.setup) {
+        node.addEventListener('dragitemstart', this._handleDragItemStart.bind(this));
+        node.addEventListener('dragitemtrack', this._handleDragItemTrack.bind(this));
+        node.addEventListener('dragitemend', this._handleDragItemEnd.bind(this));
+        node.addEventListener('itemclick', this._handlePaletteItemClick.bind(this));
+        node.setup = true;
+      }
     });
   }
 
@@ -961,7 +952,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       let dataEntry = {};
       dataEntry.id = x.id;
       dataEntry.parentId = x.parentId;
-      dataEntry.name = x.constructor.name;
+      dataEntry.name = x.descriptiveName;
       dataEntry.children = [];
       return dataEntry;
     }).filter(x => {
@@ -979,7 +970,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
       children.map(x => {
         let dataEntry = {};
         dataEntry.id = x.id;
-        dataEntry.name = x.constructor.name;
+        dataEntry.name = x.descriptiveName;
         dataEntry.children = [];
         node.children.push(dataEntry);
         nodes.push(dataEntry);

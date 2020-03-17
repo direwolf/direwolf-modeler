@@ -33,6 +33,10 @@ export class ModelShapeCircle extends ModelElement {
     });
   }
 
+  get descriptiveName() {
+    return 'Circle';
+  }
+
   get resizable() {
     return true;
   }

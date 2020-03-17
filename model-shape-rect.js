@@ -12,6 +12,10 @@ export class ModelShapeRect extends ModelElement {
     this._height = 126;
   }
 
+  get descriptiveName() {
+    return 'Rectangle';
+  }
+
   createSVGElement(viewport) {
     let group = super.createSVGElement(viewport);
     group.addClass('model-node');
