@@ -10,6 +10,7 @@ import '@material/mwc-button';
 import {ShapeInfo, Intersection} from 'kld-intersections';
 import * as Y from 'yjs';
 import { SVG } from '@svgdotjs/svg.js';
+import { fileSave } from 'browser-nativefs';
 
 import { DirewolfNodeMixin } from 'direwolf-elements/direwolf-node-mixin.js';
 import BindingRegistry from '../binding-registry.js';
@@ -993,7 +994,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
    * Handles tapping the save button in the app bar.
    *
    */
-  _handleSave(e) {
+  async _handleSave(e) {
     let jsonFile = {};
     jsonFile.space = this.direwolfSpace.space;
     jsonFile.type = 'iStar 2.0';
@@ -1016,13 +1017,11 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     });
 
     // download file
-    let a = document.createElement('a');
-    a.style.visibility = 'hidden';
-    a.href = 'data:application/json; charset=utf8, ' + encodeURIComponent(JSON.stringify(jsonFile));
-    a.download = `Direwolf-${this.direwolfSpace.space}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const data = new Blob([JSON.stringify(jsonFile)], { type: "application/json" });
+    const options = {
+      fileName: `Direwolf-${this.direwolfSpace.space}.json`,
+    };
+    await fileSave(data, options);
   }
 
   /**
