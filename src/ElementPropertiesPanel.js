@@ -52,7 +52,7 @@ export class ElementPropertiesPanel extends LitElement {
         margin-bottom: 5px;
       }
 
-      label, input, select {
+      label, input, select, textarea {
         display: inline-block;
         color: white;
         background: transparent;
@@ -70,14 +70,14 @@ export class ElementPropertiesPanel extends LitElement {
         width: 90px;
       }
 
-      input, select {
+      input, select, textarea {
         border: 1px solid var(--input-border-color);
         border-radius: 5px;
         box-sizing: border-box;
         font-size: 11px;
       }
 
-      input {
+      input, textarea {
         margin-left: 4px;
       }
 
@@ -92,6 +92,13 @@ export class ElementPropertiesPanel extends LitElement {
       select:focus option {
         color: black;
       }
+
+      textarea {
+        resize: none;
+        overflow: hidden;
+        min-height: 24px;
+        max-height: 100px;
+      }
     `;
   }
 
@@ -104,10 +111,20 @@ export class ElementPropertiesPanel extends LitElement {
         ${repeat(
           this._toPropertiesArray(this.elementProperties), // the array of items
           item => item.name, // the identify function
-          (item, i) => html`
-            <label class="animated fadeIn">${item.name}</label>
-            <input name=${item.name} type=${item.type} value=${this._getItemValue(item)} ?checked=${this._getItemValue(item)} @input=${this._handleInput} @change=${this._handleInput} class="animated fadeIn" ?readonly=${item.readOnly}>
-          ` // the template for each item
+          (item, i) => {
+            if ((item.type === 'text') && (item.multiline)) {
+              return html`
+                <label class="animated fadeIn">${item.name}</label>
+                <textarea name=${item.name} @input=${this._handleInput} @change=${this._handleInput} @focus=${this._handleInput} class="animated fadeIn"
+                          ?readonly=${item.readonly}>${this._getItemValue(item)}</textarea>
+              `;
+            } else {
+              return html`
+                <label class="animated fadeIn">${item.name}</label>
+                <input name=${item.name} type=${item.type} value=${this._getItemValue(item)} ?checked=${this._getItemValue(item)} @input=${this._handleInput} @change=${this._handleInput} class="animated fadeIn" ?readonly=${item.readonly}>
+              `;
+            }
+          } // the template for each item
         )}
       </div>
     </div>
@@ -133,8 +150,11 @@ export class ElementPropertiesPanel extends LitElement {
           property.type = 'text';
           property.value = elementProperties[key].value;
       }
-      // readOnly attribute
-      property.readOnly = (elementProperties[key].hasOwnProperty('readOnly')) ? elementProperties[key].readOnly : false;
+      // readonly attribute
+      property.readonly = (elementProperties[key].hasOwnProperty('readonly')) ? elementProperties[key].readonly : false;
+
+      // multiLine attribute
+      property.multiline = (elementProperties[key].hasOwnProperty('multiline')) ? elementProperties[key].multiline : false;
 
       // only show the property if it is not hidden
       if (!elementProperties[key].hasOwnProperty('hidden') || !elementProperties[key].hidden) {
@@ -153,8 +173,14 @@ export class ElementPropertiesPanel extends LitElement {
     if (e.target.type === 'checkbox') {
       this.element[e.target.name] = e.target.checked;
     } else {
-      this.element[e.target.name] = e.target.value;
+      this.element[e.target.name] = e.target.value.trim();
+
+      if (e.target.type === 'textarea') {
+        e.target.style.height = '10px';
+        e.target.style.height = (e.target.scrollHeight) + 5 + 'px';
+      }
     }
+    return true;
   }
 
   _handleElementPropertiesChanged(newValue) {
