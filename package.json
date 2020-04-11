@@ -22,7 +22,7 @@
     "@material/mwc-tab-bar": "^0.13.0",
     "@material/mwc-top-app-bar-fixed": "^0.13.0",
     "@svgdotjs/svg.js": "^3.0.16",
-    "browser-nativefs": "^0.4.0",
+    "browser-nativefs": "^0.6.0",
     "direwolf-elements": "^0.0.4",
     "kld-intersections": "^0.6.0",
     "lit-element": "^2.2.1",
