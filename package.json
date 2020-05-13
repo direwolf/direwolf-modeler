@@ -24,11 +24,11 @@
     "@svgdotjs/svg.js": "^3.0.16",
     "browser-nativefs": "^0.6.0",
     "direwolf-elements": "^0.0.4",
-    "kld-intersections": "^0.6.0",
+    "kld-intersections": "^0.7.0",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2",
-    "y-websocket": "^1.2.1",
-    "yjs": "^13.0.4"
+    "y-websocket": "^1.2.5",
+    "yjs": "^13.0.7"
   },
   "devDependencies": {
     "es-dev-server": "^1.40.0"
