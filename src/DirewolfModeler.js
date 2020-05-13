@@ -1699,7 +1699,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
             if (affectedEdge.points.length > 1) {
               // origin node
-              const lineOrigin = ShapeInfo.line([originCenter.x, originCenter.y, affectedEdge.points.get(1)[0], affectedEdge.points.get(1)[1]]);
+              const lineOrigin = ShapeInfo.line([originCenter.x, originCenter.y], [affectedEdge.points.get(1)[0], affectedEdge.points.get(1)[1]]);
               const intersectionsOrigin = Intersection.intersect(originShape, lineOrigin);
               // there are no intersections if the line is within the edge
               if (intersectionsOrigin.status !== 'Inside') {
@@ -1710,7 +1710,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
               }
 
               // target node
-              const lineTarget = ShapeInfo.line([affectedEdge.points.get(affectedEdge.points.length - 2)[0], affectedEdge.points.get(affectedEdge.points.length - 2)[1], targetCenter.x, targetCenter.y]);
+              const lineTarget = ShapeInfo.line([affectedEdge.points.get(affectedEdge.points.length - 2)[0], affectedEdge.points.get(affectedEdge.points.length - 2)[1]], [targetCenter.x, targetCenter.y]);
               const intersectionsTarget = Intersection.intersect(targetShape, lineTarget);
               // there are no intersections if the line is within the edge
               if (intersectionsTarget.status !== 'Inside') {
@@ -1897,7 +1897,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
           }
           const targetShape = targetNode.getOuterShape(targetOffset);
 
-          const line = ShapeInfo.line([originCenter.x, originCenter.y, targetCenter.x, targetCenter.y]);
+          const line = ShapeInfo.line([originCenter.x, originCenter.y], [targetCenter.x, targetCenter.y]);
 
           const originIntersections = Intersection.intersect(originShape, line);
           // there are no intersections if the line is within the edge
