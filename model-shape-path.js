@@ -130,7 +130,7 @@ export class ModelShapePath extends ModelElement {
       this._pathArray = this.points.toArray();
     } else {
       // support older versions that did not have the patharray as shared property
-      this._pathArray[0] = this.start;
+      this._pathArray.push(this.start);
       if (this.end !== undefined) {
         this._pathArray.push(this.end);
       }
