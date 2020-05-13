@@ -214,11 +214,19 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
         cursor: -webkit-grabbing;
       }
 
+      .model-edge {
+        fill: none;
+      }
+
+      .model-edge text {
+        fill: black
+      }
+
       .model-edge-hover {
         cursor: pointer;
       }
 
-      .model-edge-hover:hover {
+      .model-edge-hover:hover path {
         stroke-opacity: 0.5;
       }
 
@@ -1307,12 +1315,24 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
     var scale = modelViewport.transform('scaleX');
 
     if (e.detail.state === 'start') {
-
       if ((e.target === this._modelBackground) || (e.target === this._modelCanvas)) {
 
         // move whole model
         modelViewport.transform({translateX: this._viewPortTranslation.x + e.detail.dx, translateY: this._viewPortTranslation.y + e.detail.dy});
 
+      } else if (e.target.parentElement.classList.contains('model-edge-hover')) {
+        this.modelState = 'MANIPULATING-PATH';
+        const closestModelEdge = e.target.closest('.model-edge');
+
+        // manipulate points
+        const modelEdge = this._modelEdges[closestModelEdge.id];
+        if (e.target.nodeName === 'rect') {
+          this.manipulatingPointIndex = modelEdge.rects.indexOf(e.target.instance) + 1;
+          modelEdge.points.delete(this.manipulatingPointIndex);
+        } else {
+          this.manipulatingPointIndex = modelEdge.getNewPointIndex(point.x, point.y);
+        }
+        modelEdge.points.insert(this.manipulatingPointIndex, [[point.x, point.y]]);
       } else if (e.target.classList.contains('model-port')) {
 
         // start connecting state
@@ -1426,7 +1446,7 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
         modelViewport.transform({translateX: this._viewPortTranslation.x + e.detail.dx, translateY: this._viewPortTranslation.y + e.detail.dy});
         // move background
         let offsetX = (this._viewPortTranslation.x + e.detail.dx) / scale;
-        let offsetY= (this._viewPortTranslation.y + e.detail.dy) / scale;
+        let offsetY = (this._viewPortTranslation.y + e.detail.dy) / scale;
         this._modelBackground.setAttribute('x', Math.ceil(offsetX / 100) * -100);
         this._modelBackground.setAttribute('y', Math.ceil(offsetY / 100) * -100);
 
@@ -1434,6 +1454,13 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
 
         this._pendingEdge.plot([[this._pendingEdge.node.getAttribute('x1'), this._pendingEdge.node.getAttribute('y1')], [point.x, point.y]]);
 
+      } else if (this.modelState === 'MANIPULATING-PATH') {
+        const closestModelEdge = e.target.closest('.model-edge');
+
+        // manipulate points
+        const points = this._modelEdges[closestModelEdge.id].points;
+        points.delete(this.manipulatingPointIndex);
+        points.insert(this.manipulatingPointIndex, [[point.x, point.y]]);
       } else if (e.target.classList.contains('model-manipulator')) {
 
         // manipulate node
@@ -1650,24 +1677,48 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
             }
             const targetShape = targetNode.getOuterShape(targetOffset);
 
-            const line = ShapeInfo.line([originCenter.x, originCenter.y, targetCenter.x, targetCenter.y]);
+            // const line = ShapeInfo.line([originCenter.x, originCenter.y, targetCenter.x, targetCenter.y]);
 
-            const originIntersections = Intersection.intersect(originShape, line);
-            // there are no intersections if the line is within the edge
-            if (originIntersections.status !== 'Inside') {
-              let intersection = {};
-              intersection.x = originIntersections.points[0].x;
-              intersection.y = originIntersections.points[0].y;
-              affectedEdge.start = [intersection.x, intersection.y];
-            }
+            // const originIntersections = Intersection.intersect(originShape, line);
+            // // there are no intersections if the line is within the edge
+            // if (originIntersections.status !== 'Inside') {
+            //   let intersection = {};
+            //   intersection.x = originIntersections.points[0].x;
+            //   intersection.y = originIntersections.points[0].y;
+            //   affectedEdge.start = [intersection.x, intersection.y];
+            // }
 
-            const targetIntersections = Intersection.intersect(targetShape, line);
-            // there are no intersections if the line is within the edge
-            if (targetIntersections.status !== 'Inside') {
-              let intersection = {};
-              intersection.x = targetIntersections.points[0].x;
-              intersection.y = targetIntersections.points[0].y;
-              affectedEdge.end = [intersection.x, intersection.y];
+            // const targetIntersections = Intersection.intersect(targetShape, line);
+            // // there are no intersections if the line is within the edge
+            // if (targetIntersections.status !== 'Inside') {
+            //   let intersection = {};
+            //   intersection.x = targetIntersections.points[0].x;
+            //   intersection.y = targetIntersections.points[0].y;
+            //   affectedEdge.end = [intersection.x, intersection.y];
+            // }
+
+            if (affectedEdge.points.length > 1) {
+              // origin node
+              const lineOrigin = ShapeInfo.line([originCenter.x, originCenter.y, affectedEdge.points.get(1)[0], affectedEdge.points.get(1)[1]]);
+              const intersectionsOrigin = Intersection.intersect(originShape, lineOrigin);
+              // there are no intersections if the line is within the edge
+              if (intersectionsOrigin.status !== 'Inside') {
+                let intersection = {};
+                intersection.x = intersectionsOrigin.points[0].x;
+                intersection.y = intersectionsOrigin.points[0].y;
+                affectedEdge.start = [intersection.x, intersection.y];
+              }
+
+              // target node
+              const lineTarget = ShapeInfo.line([affectedEdge.points.get(affectedEdge.points.length - 2)[0], affectedEdge.points.get(affectedEdge.points.length - 2)[1], targetCenter.x, targetCenter.y]);
+              const intersectionsTarget = Intersection.intersect(targetShape, lineTarget);
+              // there are no intersections if the line is within the edge
+              if (intersectionsTarget.status !== 'Inside') {
+                let intersection = {};
+                intersection.x = intersectionsTarget.points[0].x;
+                intersection.y = intersectionsTarget.points[0].y;
+                affectedEdge.end = [intersection.x, intersection.y];
+              }
             }
 
             affectedEdge.element.front();
@@ -1810,6 +1861,9 @@ export class DirewolfModeler extends DirewolfNodeMixin(GestureEventListeners(Lit
         // store viewport translation, i.e. how much the viewport was moved in total
         this._viewPortTranslation.x = this._viewPortTranslation.x + e.detail.dx;
         this._viewPortTranslation.y = this._viewPortTranslation.y + e.detail.dy;
+      } else if (this.modelState === 'MANIPULATING-PATH') {
+        // reset state
+        this.modelState = null;
       } else if (this.modelState === 'CONNECTING-INTERACTION-FLOW') {
 
         // get the topmost model node at this position
