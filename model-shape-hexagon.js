@@ -53,7 +53,8 @@ export class ModelShapeHexagon extends ModelShapeRect {
     offset.x += this.x;
     offset.y += this.y;
     // '10,0 0,20 10,40 60,40 70,20 60,0'
-    return ShapeInfo.polygon([offset.x + 10, offset.y + 0, offset.x + 0, offset.y + 20, offset.x + 10, offset.y + 40, offset.x + 60, offset.y + 40, offset.x + 70, offset.y + 20, offset.x + 60, offset.y + 0]);
+    return ShapeInfo.polygon([offset.x + 10, offset.y + 0, offset.x + 0, offset.y + (this.height / 2), offset.x + 10, offset.y + this.height, offset.x + (this.width - 10), offset.y + this.height, offset.x + this.width, offset.y + (this.height / 2), offset.x + (this.width - 10), offset.y + 0]);
+    //return ShapeInfo.polygon([offset.x + 10, offset.y + 0, offset.x + 0, offset.y + 20, offset.x + 10, offset.y + 40, offset.x + 60, offset.y + 40, offset.x + 70, offset.y + 20, offset.x + 60, offset.y + 0]);
   }
 
 

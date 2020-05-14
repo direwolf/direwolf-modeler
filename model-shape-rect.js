@@ -59,7 +59,8 @@ export class ModelShapeRect extends ModelElement {
   }
 
   getOuterShape(offset) {
-    return ShapeInfo.rectangle({x: (offset.x + this.x), y: (offset.y + this.y), width: this.width, height: this.height});
+    //return ShapeInfo.rectangle({x: (offset.x + this.x), y: (offset.y + this.y), width: this.width, height: this.height});
+    return ShapeInfo.rectangle((offset.x + this.x), (offset.y + this.y), this.width, this.height);
   }
 
 
