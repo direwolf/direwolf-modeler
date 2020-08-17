@@ -144,25 +144,28 @@ export class ModelShapePath extends ModelElement {
   }
 
   handleSharedStateChanged(event) {
-    event.keysChanged.forEach((key) => {
-      switch (key) {
-        case 'points':
-          this._pathArray = event.target.get(key).toArray();
-          this.redrawPath();
-          break;
-        case 'start':
-          this.points.delete(0, 1);
-          this.points.insert(0, [event.target.get(key)]);
-          break;
-        case 'end':
-          if (this.points.length > 1) {
-            const lastIndex = this.points.length - 1;
-            this.points.delete(lastIndex, 1);
-          }
-          this.points.push([event.target.get(key)]);
-          break;
-      }
-    });
+    if (event.transaction.local) {
+      event.keysChanged.forEach((key) => {
+        switch (key) {
+          case 'points':
+            this._pathArray = event.target.get(key).toArray();
+            this.redrawPath();
+            break;
+          case 'start':
+            this.points.delete(0, 1);
+            this.points.insert(0, [event.target.get(key)]);
+            break;
+          case 'end':
+            if (this.points.length > 1) {
+              const lastIndex = this.points.length - 1;
+              this.points.delete(lastIndex, 1);
+            }
+            
+            this.points.push([event.target.get(key)]);
+            break;
+        }
+      });
+    }
   }
 
   handlePointsChanged(event) {
