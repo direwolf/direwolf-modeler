@@ -1,3 +1,4 @@
+/*
 import 'direwolf-ifml-elements/ifml-palette.js';
 import { IFMLViewContainer } from  'direwolf-ifml-elements/ifml-view-container';
 import { IFMLAction } from  'direwolf-ifml-elements/ifml-action';
@@ -25,6 +26,7 @@ import { IStarRelationshipNeededBy } from 'direwolf-istar-elements/istar-relatio
 import { IStarDependency } from 'direwolf-istar-elements/istar-dependency';
 import { IStarContribution } from 'direwolf-istar-elements/istar-contribution';
 import { IStarQualification } from 'direwolf-istar-elements/istar-qualification';
+*/
 
 export default class BindingRegistry {
 
@@ -35,6 +37,7 @@ export default class BindingRegistry {
    */
   static get modelIFMLTypeMap() {
     return {
+      /*
       'view-container': IFMLViewContainer,
       'action': IFMLAction,
       'view-component': IFMLViewComponent,
@@ -60,7 +63,6 @@ export default class BindingRegistry {
       'istar-dependency': IStarDependency,
       'istar-contribution': IStarContribution,
       'istar-qualification': IStarQualification
-      /*
       'material-toolbar': IFMLViewComponent,
       'material-textbox': IFMLViewComponent,
       'material-button': IFMLViewComponent,

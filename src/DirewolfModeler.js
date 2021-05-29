@@ -1,4 +1,4 @@
-import { html, css, LitElement } from 'lit-element';
+import { html, css, LitElement } from 'lit';
 import { GestureEventListeners } from './utils/gesture-event-listeners.js';
 import * as Gestures from './utils/gestures.js';
 import '@material/mwc-top-app-bar-fixed/mwc-top-app-bar-fixed.js';
@@ -10,7 +10,7 @@ import '@material/mwc-button';
 import {ShapeInfo, Intersection} from 'kld-intersections';
 import * as Y from 'yjs';
 import { SVG } from '@svgdotjs/svg.js';
-import { fileSave } from 'browser-nativefs';
+import { fileSave } from 'browser-fs-access';
 
 import { DirewolfNodeMixin } from 'direwolf-elements/direwolf-node-mixin.js';
 import BindingRegistry from '../binding-registry.js';
