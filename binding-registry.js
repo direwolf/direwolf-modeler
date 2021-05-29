@@ -1,4 +1,3 @@
-/*
 import 'direwolf-ifml-elements/ifml-palette.js';
 import { IFMLViewContainer } from  'direwolf-ifml-elements/ifml-view-container';
 import { IFMLAction } from  'direwolf-ifml-elements/ifml-action';
@@ -10,6 +9,7 @@ import { IFMLParameter } from  'direwolf-ifml-elements/ifml-parameter';
 import { IFMLNavigationFlow } from 'direwolf-ifml-elements/ifml-navigation-flow';
 import { IFMLDataFlow } from 'direwolf-ifml-elements/ifml-data-flow';
 
+/*
 import { IStarActor } from 'direwolf-istar-elements/istar-actor';
 import { IStarRole } from 'direwolf-istar-elements/istar-role';
 import { IStarAgent } from 'direwolf-istar-elements/istar-agent';
@@ -37,7 +37,6 @@ export default class BindingRegistry {
    */
   static get modelIFMLTypeMap() {
     return {
-      /*
       'view-container': IFMLViewContainer,
       'action': IFMLAction,
       'view-component': IFMLViewComponent,
@@ -47,6 +46,7 @@ export default class BindingRegistry {
       'data-flow': IFMLDataFlow,
       'event': IFMLEvent,
       'ifml-parameter': IFMLParameter,
+      /*
       'istar-actor': IStarActor,
       'istar-role': IStarRole,
       'istar-agent': IStarAgent,
@@ -98,7 +98,8 @@ export default class BindingRegistry {
       'openapi-details-view-component': IFML2HTMLOpenAPIDetailsViewComponent,
       'asyncapi-ifml-view-component-form': IFML2HTMLAsyncAPIViewComponentForm,
       'asyncapi-ifml-action': IFML2HTMLAsyncAPIAction,
-      'asyncapi-ifml-event': IFML2HTMLAsyncAPIEvent*/
+      'asyncapi-ifml-event': IFML2HTMLAsyncAPIEvent,
+      */
     };
   }
 
