@@ -9,6 +9,7 @@ import { IFMLParameter } from  'direwolf-ifml-elements/ifml-parameter';
 import { IFMLNavigationFlow } from 'direwolf-ifml-elements/ifml-navigation-flow';
 import { IFMLDataFlow } from 'direwolf-ifml-elements/ifml-data-flow';
 
+/*
 import { IStarActor } from 'direwolf-istar-elements/istar-actor';
 import { IStarRole } from 'direwolf-istar-elements/istar-role';
 import { IStarAgent } from 'direwolf-istar-elements/istar-agent';
@@ -25,6 +26,7 @@ import { IStarRelationshipNeededBy } from 'direwolf-istar-elements/istar-relatio
 import { IStarDependency } from 'direwolf-istar-elements/istar-dependency';
 import { IStarContribution } from 'direwolf-istar-elements/istar-contribution';
 import { IStarQualification } from 'direwolf-istar-elements/istar-qualification';
+*/
 
 export default class BindingRegistry {
 
@@ -44,6 +46,7 @@ export default class BindingRegistry {
       'data-flow': IFMLDataFlow,
       'event': IFMLEvent,
       'ifml-parameter': IFMLParameter,
+      /*
       'istar-actor': IStarActor,
       'istar-role': IStarRole,
       'istar-agent': IStarAgent,
@@ -60,7 +63,6 @@ export default class BindingRegistry {
       'istar-dependency': IStarDependency,
       'istar-contribution': IStarContribution,
       'istar-qualification': IStarQualification
-      /*
       'material-toolbar': IFMLViewComponent,
       'material-textbox': IFMLViewComponent,
       'material-button': IFMLViewComponent,
@@ -96,7 +98,8 @@ export default class BindingRegistry {
       'openapi-details-view-component': IFML2HTMLOpenAPIDetailsViewComponent,
       'asyncapi-ifml-view-component-form': IFML2HTMLAsyncAPIViewComponentForm,
       'asyncapi-ifml-action': IFML2HTMLAsyncAPIAction,
-      'asyncapi-ifml-event': IFML2HTMLAsyncAPIEvent*/
+      'asyncapi-ifml-event': IFML2HTMLAsyncAPIEvent,
+      */
     };
   }
 

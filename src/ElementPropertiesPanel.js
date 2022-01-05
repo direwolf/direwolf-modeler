@@ -1,5 +1,5 @@
-import { html, css, LitElement } from 'lit-element';
-import { repeat } from 'lit-html/directives/repeat';
+import { html, css, LitElement } from 'lit';
+import { repeat } from 'lit/directives/repeat.js';
 
 /**
  * `element-properties-panel`
