@@ -1,6 +1,6 @@
 {
   "name": "direwolf-modeler",
-  "version": "0.0.21",
+  "version": "0.1.0",
   "description": "The Direwolf Modeler is an online collaborative modeling environment.",
   "author": "direwolf-modeler",
   "license": "MIT",
@@ -14,21 +14,21 @@
     "start": "web-dev-server --app-index demo/index.html --node-resolve --open --watch"
   },
   "dependencies": {
-    "@material/mwc-button": "^0.21.0",
-    "@material/mwc-dialog": "^0.21.0",
-    "@material/mwc-icon-button": "^0.21.0",
-    "@material/mwc-tab": "^0.21.0",
-    "@material/mwc-tab-bar": "^0.21.0",
-    "@material/mwc-top-app-bar-fixed": "^0.21.0",
-    "@svgdotjs/svg.js": "^3.0.16",
-    "browser-fs-access": "^0.17.2",
-    "direwolf-elements": "direwolf/direwolf-elements#develop",
+    "@material/mwc-button": "^0.25.3",
+    "@material/mwc-dialog": "^0.25.3",
+    "@material/mwc-icon-button": "^0.25.3",
+    "@material/mwc-tab": "^0.25.3",
+    "@material/mwc-tab-bar": "^0.25.3",
+    "@material/mwc-top-app-bar-fixed": "^0.25.3",
+    "@svgdotjs/svg.js": "^3.1.1",
+    "browser-fs-access": "^0.23.0",
+    "direwolf-elements": "direwolf/direwolf-elements",
     "kld-intersections": "^0.7.0",
-    "lit": "^2.0.0-rc.2",
-    "y-websocket": "^1.3.14",
-    "yjs": "^13.5.6"
+    "lit": "^2.0.2",
+    "y-websocket": "^1.3.18",
+    "yjs": "^13.5.23"
   },
   "devDependencies": {
-    "@web/dev-server": "^0.1.17"
+    "@web/dev-server": "^0.1.28"
   }
 }
